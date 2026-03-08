@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --cream: #faf8f4;
+  --ink: #1a1a1a;
+  --flower-orange: #e07a5f;
+  --flower-yellow: #f2cc8f;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  @apply bg-cream text-ink font-sans antialiased min-h-screen;
+}
+
+@keyframes cinematicIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sheenPass {
+  0% {
+    opacity: 0;
+    transform: translateX(-24%);
+  }
+  25% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(24%);
+  }
+}
+
+.animate-cinematic-in {
+  animation: cinematicIn 220ms ease-out both;
+}
+
+.animate-sheen-pass {
+  animation: sheenPass 650ms ease-out both;
+}
