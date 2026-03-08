@@ -24,7 +24,7 @@ export interface Combo {
 export function comboToPills(combo: Combo): string[] {
   const modeLabel = MODES.find((m) => m.id === combo.mode)?.label ?? combo.mode;
   const energyLabel = ENERGIES.find((e) => e.id === combo.energy)?.label ?? combo.energy;
-  const pills = [modeLabel, energyLabel];
+  const pills: string[] = [modeLabel, energyLabel];
   if (combo.me?.trim()) pills.push(combo.me.trim());
   if (combo.them?.trim()) pills.push(combo.them.trim());
   return pills;
