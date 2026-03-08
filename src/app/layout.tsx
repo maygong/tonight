@@ -16,8 +16,13 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Tonight — let's go on a different date",
-  description: "A spontaneity engine for couples. Shuffle the deck and discover something to do tonight.",
+  title: "tonight",
+  description: "let's go on a different date",
+  openGraph: {
+    title: "tonight",
+    description: "let's go on a different date",
+    images: ["background2.jpeg"],
+  },
 };
 
 export default function RootLayout({
