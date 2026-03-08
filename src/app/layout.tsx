@@ -19,9 +19,17 @@ export const metadata: Metadata = {
   title: "tonight",
   description: "let's go on a different date",
   openGraph: {
+    type: "website",
     title: "tonight",
     description: "let's go on a different date",
-    images: ["background2.jpeg"],
+    images: [
+      {
+        url: "/background2.jpeg",
+        width: 576,
+        height: 1024,
+        alt: "Tonight background art",
+      },
+    ],
   },
 };
 
