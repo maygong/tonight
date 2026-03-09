@@ -7,8 +7,8 @@ const CARD_COUNT = 12;
 const ANGLE_PER_CARD = 6;
 const CARD_WIDTH = 88;
 const CARD_HEIGHT = 124;
-const DRAG_SENSITIVITY = 1.65;
-const SNAP_OPEN_THRESHOLD = 28;
+const DRAG_SENSITIVITY = 2.1;
+const SNAP_OPEN_THRESHOLD = 14;
 
 export function Phase2Deck({
   combo,
@@ -46,7 +46,7 @@ export function Phase2Deck({
       startX.current = e.clientX;
       startOffset.current = fanOffset;
       setIsDragging(true);
-      deckRef.current?.setPointerCapture?.(e.pointerId);
+      e.currentTarget.setPointerCapture?.(e.pointerId);
     },
     [fanOffset, selectedIndex, isGenerating]
   );
@@ -95,17 +95,26 @@ export function Phase2Deck({
         className="relative w-full flex justify-center items-end min-h-[220px]"
       >
         <div
-          className="absolute left-1/2 bottom-0 flex justify-center items-end touch-none"
+          className="absolute left-1/2 bottom-0 touch-none select-none"
           style={{
-            width: CARD_WIDTH,
-            height: CARD_HEIGHT,
+            width: 300,
+            height: 210,
             transform: "translateX(-50%)",
+            touchAction: "none",
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
         >
+          <div
+            className="absolute left-1/2 bottom-0 flex justify-center items-end"
+            style={{
+              width: CARD_WIDTH,
+              height: CARD_HEIGHT,
+              transform: "translateX(-50%)",
+            }}
+          >
           {Array.from({ length: CARD_COUNT }).map((_, i) => {
             const normalizedIndex = CARD_COUNT > 1 ? i / (CARD_COUNT - 1) : 0.5;
             const angleDeg = -totalSpreadDeg / 2 + normalizedIndex * totalSpreadDeg;
@@ -139,6 +148,7 @@ export function Phase2Deck({
               </button>
             );
           })}
+          </div>
         </div>
       </div>
 
