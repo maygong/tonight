@@ -9,6 +9,7 @@ import type { Combo } from "@/lib/constants";
 import { comboToPills } from "@/lib/constants";
 
 type Phase = "input" | "deck" | "reveal";
+const TRANSITION_LINGER_MS = 500;
 
 export default function Home() {
   const [phase, setPhase] = useState<Phase>("input");
@@ -30,25 +31,27 @@ export default function Home() {
     setIsGenerating(true);
     setApiError(null);
     try {
-      const res = await fetch("/api/generate", {
+      const requestPromise = fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(c),
       });
+      // Small cinematic linger so the picked card can breathe before transitioning.
+      await new Promise((resolve) => setTimeout(resolve, TRANSITION_LINGER_MS));
+      setPhase("reveal");
+
+      const res = await requestPromise;
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setResult(null);
         setApiError(data?.error ?? `Request failed (${res.status})`);
-        setDeckResetSignal((v) => v + 1);
         return false;
       }
       setResult(data.activity ?? "Something went wrong.");
-      setPhase("reveal");
       return true;
     } catch (e) {
       setResult(null);
       setApiError(e instanceof Error ? e.message : "Something went wrong. Try again.");
-      setDeckResetSignal((v) => v + 1);
       return false;
     } finally {
       setIsGenerating(false);
@@ -105,10 +108,12 @@ export default function Home() {
                 />
               )}
 
-              {phase === "reveal" && result && (
+              {phase === "reveal" && (
                 <Phase3Result
                   combo={combo}
                   result={result}
+                  isGenerating={isGenerating}
+                  apiError={apiError}
                   onRedraw={handleRedraw}
                   onStartOver={handleStartOver}
                   showPills={false}

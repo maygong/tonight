@@ -8,12 +8,16 @@ const PANEL_CLASS = "rounded-2xl border border-ink/10 bg-white/60 backdrop-blur-
 export function Phase3Result({
   combo,
   result,
+  isGenerating,
+  apiError,
   onRedraw,
   onStartOver,
   showPills = true,
 }: {
   combo: Combo;
-  result: string;
+  result: string | null;
+  isGenerating: boolean;
+  apiError: string | null;
   onRedraw: () => void;
   onStartOver: () => void;
   showPills?: boolean;
@@ -67,10 +71,18 @@ export function Phase3Result({
           </div>
 
           <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl bg-[#1a1a1a] text-cream p-6 sm:p-8 shadow-xl border border-ink/10 flex items-center justify-center">
-            <p className="font-serif text-xl sm:text-2xl leading-relaxed text-center">{result}</p>
+            <p className="font-serif text-xl sm:text-2xl leading-relaxed text-center">
+              {result ?? (isGenerating ? "Cooking up your idea..." : "Could not load a result. Try Re-draw.")}
+            </p>
           </div>
         </div>
       </button>
+
+      {apiError && (
+        <div className="mb-4 w-full rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800">
+          {apiError}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2 w-full">
         <button
@@ -90,8 +102,11 @@ export function Phase3Result({
         <button
           type="button"
           onClick={handleLetsDoIt}
+          disabled={!result || !revealed}
           className={`w-full rounded-2xl py-3 px-2 font-medium text-xs sm:text-sm transition-all border border-ink/20 ${
-            confirmState === "done"
+            !result || !revealed
+              ? "bg-ink/10 text-ink/40 border-ink/10 cursor-not-allowed"
+              : confirmState === "done"
               ? "bg-green-600/20 text-green-800 border-green-400/40"
               : confirmState === "confirming"
                 ? "bg-ink/10 text-ink animate-pulse"
