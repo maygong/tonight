@@ -585,6 +585,9 @@ video {
 .mb-6 {
   margin-bottom: 1.5rem;
 }
+.mb-7 {
+  margin-bottom: 1.75rem;
+}
 .mb-8 {
   margin-bottom: 2rem;
 }
@@ -818,9 +821,11 @@ video {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-.py-6 {
-  padding-top: 1.5rem;
+.pb-6 {
   padding-bottom: 1.5rem;
+}
+.pt-\[9vh\] {
+  padding-top: 9vh;
 }
 .text-left {
   text-align: left;
@@ -1090,8 +1095,8 @@ body {
 
 @media (min-width: 640px) {
 
-  .sm\:mb-8 {
-    margin-bottom: 2rem;
+  .sm\:mb-9 {
+    margin-bottom: 2.25rem;
   }
 
   .sm\:h-\[280px\] {
@@ -1112,9 +1117,12 @@ body {
     padding-bottom: 1rem;
   }
 
-  .sm\:py-8 {
-    padding-top: 2rem;
+  .sm\:pb-8 {
     padding-bottom: 2rem;
+  }
+
+  .sm\:pt-\[11vh\] {
+    padding-top: 11vh;
   }
 
   .sm\:text-2xl {
