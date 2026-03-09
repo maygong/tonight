@@ -92,19 +92,19 @@ export function Phase2Deck({
 
       <div
         ref={deckRef}
-        className="relative w-full flex justify-center items-end min-h-[220px] touch-none"
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerUp}
+        className="relative w-full flex justify-center items-end min-h-[220px]"
       >
         <div
-          className="absolute left-1/2 bottom-0 flex justify-center items-end"
+          className="absolute left-1/2 bottom-0 flex justify-center items-end touch-none"
           style={{
             width: CARD_WIDTH,
             height: CARD_HEIGHT,
             transform: "translateX(-50%)",
           }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
         >
           {Array.from({ length: CARD_COUNT }).map((_, i) => {
             const normalizedIndex = CARD_COUNT > 1 ? i / (CARD_COUNT - 1) : 0.5;
@@ -143,7 +143,7 @@ export function Phase2Deck({
       </div>
 
       <p className="text-sm text-ink/60 mt-4 text-center">
-        {isGenerating ? "Drawing your card..." : "Drag right to fan the cards · tap one to draw"}
+        {isGenerating ? "Drawing your card..." : "Swipe and pick"}
       </p>
     </div>
   );
