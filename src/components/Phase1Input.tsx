@@ -17,6 +17,12 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
 
   const handleShuffle = () => {
     if (!allFilled || mode === null || energy === null) return;
+    if (typeof document !== "undefined" && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
     onShuffle({ mode, energy, me: me.trim(), them: them.trim() });
   };
 
@@ -77,7 +83,7 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
               value={me}
               onChange={(e) => setMe(e.target.value)}
               placeholder="e.g. free, red, nostalgic"
-              className="w-full rounded-xl border border-ink/10 bg-white/60 px-3 py-2.5 text-sm placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink/20"
+              className="w-full rounded-xl border border-ink/10 bg-white/60 px-3 py-2.5 text-base sm:text-sm placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink/20"
             />
           </label>
           <label className="block">
@@ -87,8 +93,8 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
               maxLength={20}
               value={them}
               onChange={(e) => setThem(e.target.value)}
-              placeholder="e.g. rooftop, jazz, adventure"
-              className="w-full rounded-xl border border-ink/10 bg-white/60 px-3 py-2.5 text-sm placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink/20"
+              placeholder="e.g. rooftop, jazz, adventurous"
+              className="w-full rounded-xl border border-ink/10 bg-white/60 px-3 py-2.5 text-base sm:text-sm placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink/20"
             />
           </label>
         </div>

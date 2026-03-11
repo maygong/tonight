@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { FlowerBackground } from "@/components/FlowerBackground";
 import { Phase1Input } from "@/components/Phase1Input";
 import { Phase2Deck } from "@/components/Phase2Deck";
@@ -84,10 +84,16 @@ export default function Home() {
     setPhase("input");
   }, []);
 
+  useEffect(() => {
+    if (phase !== "input") {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [phase]);
+
   return (
     <>
       <FlowerBackground />
-      <main className="relative z-10 min-h-screen flex flex-col items-center px-4 pt-[9vh] pb-6 sm:pt-[11vh] sm:pb-8">
+      <main className="relative z-10 min-h-[100dvh] flex flex-col items-center px-4 pt-[9vh] pb-6 sm:pt-[11vh] sm:pb-8">
         <header className="text-center mb-7 sm:mb-9">
           <h1 className="font-serif text-3xl sm:text-4xl text-ink tracking-tight">tonight</h1>
           <p className="font-sans text-sm text-ink/70 mt-0.5">let&apos;s go on a different date</p>
