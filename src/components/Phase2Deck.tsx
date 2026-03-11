@@ -36,7 +36,7 @@ export function Phase2Deck({
   }, [resetSignal]);
 
   function handleOpenDeck() {
-    if (step !== "stacked" || isGenerating) return;
+    if (step !== "stacked") return;
     setStep("fanned");
   }
 
@@ -59,7 +59,6 @@ export function Phase2Deck({
           <button
             type="button"
             onClick={handleOpenDeck}
-            disabled={isGenerating}
             className="absolute left-1/2 bottom-8 -translate-x-1/2 h-[184px] w-[210px] focus:outline-none focus:ring-2 focus:ring-ink/30 focus:ring-offset-2 focus:ring-offset-cream"
             style={{ minHeight: 44, minWidth: 44 }}
           >
@@ -92,7 +91,7 @@ export function Phase2Deck({
                   key={i}
                   type="button"
                   onClick={() => handlePickCard(i)}
-                  disabled={selectedIndex !== null || isGenerating}
+                  disabled={selectedIndex !== null}
                   className="absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-ink/30 focus:ring-offset-2 focus:ring-offset-cream hover:-translate-y-[calc(50%+6px)] hover:shadow-xl active:scale-95"
                   style={{
                     minHeight: 44,
