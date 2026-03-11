@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { FlowerBackground } from "@/components/FlowerBackground";
 import { Phase1Input } from "@/components/Phase1Input";
 import { Phase2Deck } from "@/components/Phase2Deck";
@@ -18,29 +18,17 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [deckResetSignal, setDeckResetSignal] = useState(0);
+  const pendingGenerationRef = useRef<Promise<boolean> | null>(null);
 
-  const handleShuffle = useCallback((c: Combo) => {
-    setCombo(c);
-    setResult(null);
-    setApiError(null);
-    setDeckResetSignal((v) => v + 1);
-    setPhase("deck");
-  }, []);
-
-  const handleDrawCard = useCallback(async (c: Combo): Promise<boolean> => {
+  const generateIdea = useCallback(async (c: Combo): Promise<boolean> => {
     setIsGenerating(true);
     setApiError(null);
     try {
-      const requestPromise = fetch("/api/generate", {
+      const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(c),
       });
-      // Small cinematic linger so the picked card can breathe before transitioning.
-      await new Promise((resolve) => setTimeout(resolve, TRANSITION_LINGER_MS));
-      setPhase("reveal");
-
-      const res = await requestPromise;
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         setResult(null);
@@ -58,12 +46,35 @@ export default function Home() {
     }
   }, []);
 
-  const handleRedraw = useCallback(() => {
+  const handleShuffle = useCallback((c: Combo) => {
+    setCombo(c);
     setResult(null);
     setApiError(null);
     setDeckResetSignal((v) => v + 1);
     setPhase("deck");
-  }, []);
+    // API starts immediately when entering screen 2.
+    pendingGenerationRef.current = generateIdea(c);
+  }, [generateIdea]);
+
+  const handlePickCard = useCallback(async () => {
+    await new Promise((resolve) => setTimeout(resolve, TRANSITION_LINGER_MS));
+    // Generation is expected to be done already; if not, wait briefly for it.
+    if (!result && pendingGenerationRef.current) {
+      await pendingGenerationRef.current;
+      pendingGenerationRef.current = null;
+    }
+    setPhase("reveal");
+  }, [result]);
+
+  const handleRedraw = useCallback(() => {
+    if (!combo) return;
+    setResult(null);
+    setApiError(null);
+    setDeckResetSignal((v) => v + 1);
+    setPhase("deck");
+    // Re-roll immediately kicks off a fresh generation for step 2.
+    pendingGenerationRef.current = generateIdea(combo);
+  }, [combo, generateIdea]);
 
   const handleStartOver = useCallback(() => {
     setCombo(null);
@@ -100,8 +111,7 @@ export default function Home() {
 
               {phase === "deck" && (
                 <Phase2Deck
-                  combo={combo}
-                  onDrawCard={handleDrawCard}
+                  onPickCard={handlePickCard}
                   isGenerating={isGenerating}
                   apiError={apiError}
                   resetSignal={deckResetSignal}

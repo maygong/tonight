@@ -51,8 +51,11 @@ export function Phase3Result({
 
       <button
         type="button"
-        onClick={() => setRevealed(true)}
-        disabled={revealed}
+        onClick={() => {
+          if (!result) return;
+          setRevealed(true);
+        }}
+        disabled={revealed || !result}
         className="w-full mb-8 [perspective:1200px] animate-cinematic-in"
       >
         <div
@@ -72,7 +75,7 @@ export function Phase3Result({
 
           <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-2xl bg-[#1a1a1a] text-cream p-6 sm:p-8 shadow-xl border border-ink/10 flex items-center justify-center">
             <p className="font-serif text-xl sm:text-2xl leading-relaxed text-center">
-              {result ?? (isGenerating ? "Cooking up your idea..." : "Could not load a result. Try Re-draw.")}
+              {result ?? ""}
             </p>
           </div>
         </div>

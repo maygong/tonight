@@ -24,7 +24,7 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
     <div className="w-full max-w-[460px] flex flex-col gap-6">
       {/* Mode — 2x2 grid */}
       <section className={PANEL_CLASS}>
-        <p className="text-xs font-medium text-ink/60 uppercase tracking-wider mb-3">Mode</p>
+        <p className="text-xs font-medium text-ink/60 uppercase tracking-wider mb-3">The Move</p>
         <div className="grid grid-cols-2 gap-2">
           {MODES.map((m) => (
             <button
@@ -67,7 +67,7 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
 
       {/* Vibe descriptors */}
       <section className={PANEL_CLASS}>
-        <p className="text-xs font-medium text-ink/60 uppercase tracking-wider mb-3">Vibe Descriptor</p>
+        <p className="text-xs font-medium text-ink/60 uppercase tracking-wider mb-3">Ingredients</p>
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
             <span className="text-xs text-ink/60 block mb-1">Me</span>
@@ -76,7 +76,7 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
               maxLength={20}
               value={me}
               onChange={(e) => setMe(e.target.value)}
-              placeholder="e.g. dance"
+              placeholder="e.g. free, red, nostalgic"
               className="w-full rounded-xl border border-ink/10 bg-white/60 px-3 py-2.5 text-sm placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink/20"
             />
           </label>
@@ -87,7 +87,7 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
               maxLength={20}
               value={them}
               onChange={(e) => setThem(e.target.value)}
-              placeholder="e.g. adventurous"
+              placeholder="e.g. rooftop, jazz, adventurous"
               className="w-full rounded-xl border border-ink/10 bg-white/60 px-3 py-2.5 text-sm placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink/20"
             />
           </label>

@@ -1,8 +1,8 @@
 export const MODES = [
-  { id: "consume", label: "Consume", sub: "watch·eat·listen·absorb" },
-  { id: "create", label: "Create", sub: "make·build·draw·cook" },
-  { id: "explore", label: "Explore", sub: "go·discover·wander" },
-  { id: "connect", label: "Connect", sub: "talk·play·share" },
+  { id: "consume", label: "Consume", sub: "watch · eat · listen · absorb" },
+  { id: "create", label: "Create", sub: "make · build · draw · cook" },
+  { id: "explore", label: "Explore", sub: "go · discover · wander" },
+  { id: "connect", label: "Connect", sub: "talk · play · share" },
 ] as const;
 
 export const ENERGIES = [

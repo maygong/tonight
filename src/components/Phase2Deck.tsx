@@ -1,86 +1,50 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
-import type { Combo } from "@/lib/constants";
+import { useEffect, useState } from "react";
 
-const CARD_COUNT = 12;
-const ANGLE_PER_CARD = 6;
-const CARD_WIDTH = 88;
-const CARD_HEIGHT = 124;
-const DRAG_SENSITIVITY = 2.1;
-const SNAP_OPEN_THRESHOLD = 14;
+const CARD_WIDTH = 92;
+const CARD_HEIGHT = 132;
+const FAN_LAYOUT = [
+  { x: -84, y: 11, rot: -16 },
+  { x: -56, y: 7, rot: -10 },
+  { x: -28, y: 3, rot: -5 },
+  { x: 0, y: 0, rot: 0 },
+  { x: 28, y: 3, rot: 5 },
+  { x: 56, y: 7, rot: 10 },
+  { x: 84, y: 11, rot: 16 },
+] as const;
+
+type DeckStep = "stacked" | "fanned";
 
 export function Phase2Deck({
-  combo,
-  onDrawCard,
+  onPickCard,
   isGenerating,
   apiError,
   resetSignal,
 }: {
-  combo: Combo;
-  onDrawCard: (c: Combo) => Promise<boolean>;
+  onPickCard: () => Promise<void> | void;
   isGenerating: boolean;
   apiError: string | null;
   resetSignal: number;
 }) {
-  const [fanOffset, setFanOffset] = useState(0);
+  const [step, setStep] = useState<DeckStep>("stacked");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const startX = useRef(0);
-  const startOffset = useRef(0);
-  const deckRef = useRef<HTMLDivElement>(null);
-  const didDrag = useRef(false);
-
-  const maxFan = 120;
-  const clampFan = (v: number) => Math.min(maxFan, Math.max(0, v));
 
   useEffect(() => {
+    setStep("stacked");
     setSelectedIndex(null);
-    didDrag.current = false;
   }, [resetSignal]);
 
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      if (selectedIndex !== null || isGenerating) return;
-      didDrag.current = false;
-      startX.current = e.clientX;
-      startOffset.current = fanOffset;
-      setIsDragging(true);
-      e.currentTarget.setPointerCapture?.(e.pointerId);
-    },
-    [fanOffset, selectedIndex, isGenerating]
-  );
+  function handleOpenDeck() {
+    if (step !== "stacked" || isGenerating) return;
+    setStep("fanned");
+  }
 
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDragging) return;
-      const dx = e.clientX - startX.current;
-      if (Math.abs(dx) > 8) didDrag.current = true;
-      setFanOffset(clampFan(startOffset.current + dx * DRAG_SENSITIVITY));
-    },
-    [isDragging]
-  );
-
-  const handlePointerUp = useCallback(() => {
-    setFanOffset((prev) => (prev >= SNAP_OPEN_THRESHOLD ? maxFan : 0));
-    setIsDragging(false);
-  }, [maxFan]);
-
-  const handleCardClick = useCallback(
-    async (index: number) => {
-      if (isGenerating || selectedIndex !== null || didDrag.current) return;
-      if (fanOffset < 16) return;
-      setSelectedIndex(index);
-      const ok = await onDrawCard(combo);
-      if (!ok) {
-        setSelectedIndex(null);
-      }
-    },
-    [combo, fanOffset, onDrawCard, isGenerating, selectedIndex]
-  );
-
-  const t = fanOffset / maxFan;
-  const totalSpreadDeg = 20 + t * (CARD_COUNT - 1) * ANGLE_PER_CARD;
+  async function handlePickCard(index: number) {
+    if (step !== "fanned" || selectedIndex !== null) return;
+    setSelectedIndex(index);
+    await onPickCard();
+  }
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -90,70 +54,68 @@ export function Phase2Deck({
         </div>
       )}
 
-      <div
-        ref={deckRef}
-        className="relative w-full flex justify-center items-end min-h-[220px]"
-      >
-        <div
-          className="absolute left-1/2 bottom-0 touch-none select-none"
-          style={{
-            width: 300,
-            height: 210,
-            transform: "translateX(-50%)",
-            touchAction: "none",
-          }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerLeave={handlePointerUp}
-        >
-          <div
-            className="absolute left-1/2 bottom-0 flex justify-center items-end"
-            style={{
-              width: CARD_WIDTH,
-              height: CARD_HEIGHT,
-              transform: "translateX(-50%)",
-            }}
+      <div className="relative w-full min-h-[260px]">
+        {step === "stacked" && (
+          <button
+            type="button"
+            onClick={handleOpenDeck}
+            disabled={isGenerating}
+            className="absolute left-1/2 bottom-8 -translate-x-1/2 h-[184px] w-[210px] focus:outline-none focus:ring-2 focus:ring-ink/30 focus:ring-offset-2 focus:ring-offset-cream"
+            style={{ minHeight: 44, minWidth: 44 }}
           >
-          {Array.from({ length: CARD_COUNT }).map((_, i) => {
-            const normalizedIndex = CARD_COUNT > 1 ? i / (CARD_COUNT - 1) : 0.5;
-            const angleDeg = -totalSpreadDeg / 2 + normalizedIndex * totalSpreadDeg;
-            const isSelected = selectedIndex === i;
-            const isDimmed = selectedIndex !== null && selectedIndex !== i;
-            const cardTransform = isSelected
-              ? `rotate(${angleDeg}deg) translateY(-24px) scale(1.13) translateZ(0)`
-              : `rotate(${angleDeg}deg) translateZ(0)`;
+            <div className="absolute inset-0">
+              {FAN_LAYOUT.map((card, i) => (
+                <div
+                  key={i}
+                  className="absolute left-1/2 top-[56%] -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    width: CARD_WIDTH,
+                    height: CARD_HEIGHT,
+                    transform: `translate(-50%, -50%) translate(${card.x * 0.2}px, ${card.y * 0.5}px) rotate(${card.rot * 0.24}deg)`,
+                    zIndex: i + 1,
+                  }}
+                >
+                  <CardBack />
+                </div>
+              ))}
+            </div>
+          </button>
+        )}
 
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => handleCardClick(i)}
-                disabled={isGenerating || selectedIndex !== null || fanOffset < 16}
-                className="absolute transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-ink/30 focus:ring-offset-2 focus:ring-offset-cream"
-                style={{
-                  width: CARD_WIDTH,
-                  height: CARD_HEIGHT,
-                  transformOrigin: "50% 100%",
-                  transform: cardTransform,
-                  zIndex: isSelected ? 100 : i,
-                  opacity: isDimmed ? 0.16 : 1,
-                  filter: isDimmed ? "blur(0.8px)" : "none",
-                  boxShadow: isSelected
-                    ? "0 18px 30px rgba(0,0,0,0.24)"
-                    : "0 6px 10px rgba(0,0,0,0.15)",
-                }}
-              >
-                <CardBack />
-              </button>
-            );
-          })}
+        {step === "fanned" && (
+          <div className="absolute inset-0">
+            {FAN_LAYOUT.map((card, i) => {
+              const isSelected = selectedIndex === i;
+              const isOther = selectedIndex !== null && selectedIndex !== i;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handlePickCard(i)}
+                  disabled={selectedIndex !== null || isGenerating}
+                  className="absolute left-1/2 top-[60%] -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-ink/30 focus:ring-offset-2 focus:ring-offset-cream hover:-translate-y-[calc(50%+6px)] hover:shadow-xl active:scale-95"
+                  style={{
+                    minHeight: 44,
+                    minWidth: 44,
+                    width: CARD_WIDTH,
+                    height: CARD_HEIGHT,
+                    transform: isSelected
+                      ? "translate(-50%, -50%) translateY(-52px) scale(1.2)"
+                      : `translate(-50%, -50%) translate(${card.x}px, ${card.y}px) rotate(${card.rot}deg)`,
+                    opacity: isOther ? 0.08 : 1,
+                    zIndex: isSelected ? 40 : i + 1,
+                  }}
+                >
+                  <CardBack />
+                </button>
+              );
+            })}
           </div>
-        </div>
+        )}
       </div>
 
       <p className="text-sm text-ink/60 mt-4 text-center">
-        {isGenerating ? "Drawing your card..." : "Swipe and pick"}
+        {"Pick a card"}
       </p>
     </div>
   );
