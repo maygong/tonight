@@ -87,7 +87,7 @@ export function Phase1Input({ onShuffle }: { onShuffle: (c: Combo) => void }) {
               maxLength={20}
               value={them}
               onChange={(e) => setThem(e.target.value)}
-              placeholder="e.g. rooftop, jazz, adventurous"
+              placeholder="e.g. rooftop, jazz, adventure"
               className="w-full rounded-xl border border-ink/10 bg-white/60 px-3 py-2.5 text-sm placeholder:text-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink/20"
             />
           </label>
