@@ -1,6 +1,6 @@
 # Tonight
 
-A spontaneity engine for couples — pick a mode, energy, and vibes, shuffle the deck, and get one surprising activity idea.
+A spontaneity engine for couples — pick a mode, energy, and vibes, shuffle the deck, and get one surprising activity idea!
 
 ## Setup
 
